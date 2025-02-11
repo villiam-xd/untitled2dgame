@@ -8,6 +8,7 @@ public class Movement : MonoBehaviour
 {
     public float acceleration;
     public float maxSpeed;
+    public float jumpForce;
     private Vector2 move;
     
     //Player object components
@@ -27,9 +28,16 @@ public class Movement : MonoBehaviour
 
     void FixedUpdate()
     {
+        //Player moves on input if touching ground and speed slower than max speed
         if (Mathf.Abs(body.velocity.x) < maxSpeed && collider.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
+            //move is equal to 0 when no input, 1 when right input and -1 when left input
             body.AddForce(move * acceleration * Time.deltaTime);
+        }
+
+        if (Mathf.Abs(body.velocity.x) > 30 && collider.IsTouchingLayers(LayerMask.GetMask("Wall")))
+        {
+            Debug.Log("lmao");
         }
     }
 
@@ -48,50 +56,22 @@ public class Movement : MonoBehaviour
             spriteRenderer.flipX = true;
         }
         
+        //Gets horizontal input direction
         move = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
 
+        //Jumps if player is touching ground
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (collider.IsTouchingLayers(LayerMask.GetMask("Ground")))
             {
-                body.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
+                body.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
         }
     }
 
-    void OldMovement()
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (Input.GetKey(KeyCode.W))
-            {
-                if (collider.IsTouchingLayers(LayerMask.GetMask("Ground")))
-                {
-                    if(body.velocity.y == 0 || true)
-                    {
-                        body.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-
-                    }
-                }
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                if (body.velocity.x > 0)
-                {
-                    body.velocity = new Vector2(0, body.velocity.y);
-                }
-                Debug.Log("A key pressed");
-                body.AddForce(Vector2.left * 20, ForceMode2D.Impulse);
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                if (body.velocity.x < 0)
-                {
-                    body.velocity = new Vector2(0, body.velocity.y);
-                }
-                Debug.Log("D key pressed");
-                body.AddForce(Vector2.right * 20, ForceMode2D.Impulse);
-            }
-        }
+        Vector2 velocity = other.relativeVelocity;
+        Debug.Log(other.relativeVelocity);
     }
 }
