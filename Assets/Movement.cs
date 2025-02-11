@@ -1,14 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.PlasticSCM.Editor.WebApi;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Movement : MonoBehaviour
 {
     public float acceleration;
     public float maxSpeed;
     public float jumpForce;
+    public GameObject speedometer;
     private Vector2 move;
     
     //Player object components
@@ -43,6 +45,9 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        speedometer.GetComponent<TextMeshProUGUI>().text = Mathf.Abs(body.velocity.x).ToString("000");
+        
+        
         //Determines player speed to play running animation
         animator.SetFloat("Speed", Mathf.Abs(body.velocity.x));
         
